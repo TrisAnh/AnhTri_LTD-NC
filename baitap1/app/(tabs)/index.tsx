@@ -1,56 +1,95 @@
-import { Image, StyleSheet, Platform } from "react-native";
+import React, { useEffect } from "react";
+import { View, Image, StyleSheet, Text } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
+import {
+  createStackNavigator,
+  StackNavigationProp,
+} from "@react-navigation/stack";
 
-import { HelloWave } from "@/components/HelloWave";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
+// Định nghĩa kiểu cho navigation
+type RootStackParamList = {
+  Intro: undefined;
+  Home: undefined;
+};
 
-export default function HomeScreen() {
+type IntroScreenNavigationProp = StackNavigationProp<
+  RootStackParamList,
+  "Intro"
+>;
+
+interface IntroScreenProps {
+  navigation: IntroScreenNavigationProp;
+}
+
+const Stack = createStackNavigator<RootStackParamList>();
+
+function IntroScreen({ navigation }: IntroScreenProps) {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      navigation.replace("Home");
+    }, 10000); // Chuyển trang sau 10 giây
+
+    return () => clearTimeout(timer); // Dọn dẹp timer khi component bị unmount
+  }, [navigation]);
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
-      headerImage={
-        <Image
-          source={require("@/assets/images/Anh1.png")}
-          style={styles.avatar}
+    <View style={styles.container}>
+      <Image
+        source={require("@/assets/images/Anh1.png")}
+        style={styles.avatar}
+      />
+      <Text style={styles.introText}>Hi, I'm Huỳnh Nguyễn Anh Trí!</Text>
+    </View>
+  );
+}
+
+function HomeScreen() {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Homepage</Text>
+      <Text style={styles.subtitle}>Welcome to the homepage!</Text>
+    </View>
+  );
+}
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Intro">
+        <Stack.Screen
+          name="Intro"
+          component={IntroScreen}
+          options={{ headerShown: false }}
         />
-      }
-    >
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Hi, I'm Huỳnh Nguyễn Anh Trí!</ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.infoContainer}>
-        <ThemedText type="subtitle">Về tôi:</ThemedText>
-        <ThemedText>
-          Là sinh viên năm 4 đang học tại trường ĐH Sư phạm Kỹ thuật TP.HCM.
-        </ThemedText>
-        <ThemedText>
-          MSSV <ThemedText type="defaultSemiBold">21110330</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+        <Stack.Screen name="Home" component={HomeScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: "row",
+  container: {
+    flex: 1,
+    justifyContent: "center",
     alignItems: "center",
-    gap: 8,
-  },
-  infoContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+    backgroundColor: "#f4f4f4",
   },
   avatar: {
-    height: 178,
-    width: 178,
-    borderRadius: 89,
-    left: 0,
-    position: "absolute",
+    height: 150,
+    width: 150,
+    borderRadius: 75,
+    marginBottom: 20,
+  },
+  introText: {
+    fontSize: 24,
+    fontWeight: "bold",
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: "bold",
+  },
+  subtitle: {
+    fontSize: 20,
+    marginTop: 10,
   },
 });
